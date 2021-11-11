@@ -1,0 +1,40 @@
+# Parsing the data
+
+Once you downloaded json data files, you can now parse them into more legible formats like csv files. Here, we will walk through steps for parsing json files in R.
+
+You'll need `rjson` library for this, so go ahead and install the package if you don't have it installed yet.
+
+```r
+install.packages('rjson')
+```
+
+Edit the paths (i.e., `output_path` and `json_path`) to and run the following code, and you will get a single `parsed_data.csv` file with all data!
+
+```r
+library(rjson)
+
+# set output path and file name
+output_path = "out" # your output directory where csv file will be stored
+output_fname = "parsed_data.csv"
+
+# list of json files to be parsed
+json_path = "aws_sync/data" # your data directory where json files lives
+json_fnames = dir(path=json_path,pattern = "*.json")
+
+# initialize dataframe
+df = data.frame()
+
+# go through each json file
+for (f in json_fnames) {
+	 # load file
+	 tmp = jsonlite::fromJSON(sprintf("%s/%s", json_path, f), simplifyDataFrame = TRUE)
+	 
+	 # merge into the data frame
+	 df = rbind(df, tmp)
+}
+
+# save data to a csv file
+write.csv(apply(df,2,as.character), 
+file = sprintf("%s/%s", output_path, output_fname),
+row.names = FAE
+```
